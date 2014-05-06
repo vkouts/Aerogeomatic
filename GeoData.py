@@ -11,7 +11,7 @@ class Road:
    ROADSFILE = './in/roads.txt'
 
    def __init__(self):
-      self.conn = sqlite3.connect(self.DB)
+      self.conn = sqlite3.connect(self.DB,check_same_thread = False)
       self.cur = self.conn.cursor()
       self.cur.execute("""
          CREATE TABLE IF NOT EXISTS Roads(
@@ -95,6 +95,10 @@ class Road:
 
    def length(self, RCode):
        self.cur.execute("SELECT length FROM Roads WHERE road_code=?",[RCode])
+       return self.cur.fetchone()[0]
+
+   def name(self, RCode):
+       self.cur.execute("SELECT name FROM Roads WHERE road_code=?",[RCode])
        return self.cur.fetchone()[0]
 
    def __del__(self):

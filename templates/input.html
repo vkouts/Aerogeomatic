@@ -31,7 +31,7 @@
          "{{ road }}",
          {% endfor %}];
          $("#Road").jqxExpander({ toggleMode: 'none', width: '350px', showArrow: false });
-         $("#rcode").jqxDropDownList({  source: roadscode, selectedIndex: -1, width: '200px', height: '20px', promptText: "..", dropDownHeight: "180px" });
+         $("#rcode").jqxDropDownList({  source: roadscode, selectedIndex: -1, width: '200px', height: '20px', promptText: "Введите код дороги", dropDownHeight: "180px" });
          $("#begin_km").jqxInput({ width: '200px', height: '20px' });
          $("#end_km").jqxInput({ width: '200px', height: '20px' });
          $("#dateAdd").jqxDateTimeInput({  width: '200px', height: '20px' });
@@ -79,8 +79,15 @@
                      console.log(result);
                      console.log(JSON.stringify(result));
                      console.log(result.result.Rcode);
-                  }
-                );
+                     $("div#result").html('<table><tr><td>Съезды к АЗС на дороге<br>"' + 
+                     result.result.Name + 
+                     '"<br>'+
+                     result.result.Begin_km +
+                     ', ' +
+                     result.result.End_km +
+                     '</td></tr></table>' + 
+                     result.result.Table);
+                  });
          });
       });
     </script>
@@ -112,11 +119,11 @@
    </tr>
 
    <tr>
-   <td>Начало:</td><td><input id="begin_km" value="0"/></td>
+   <td>Начало:</td><td><input id="begin_km" value="0"/>&nbsp;км.</td>
    </tr>
 
    <tr>
-   <td>Конец:</td><td><input id="end_km" value="0"/></td>
+   <td>Конец:</td><td><input id="end_km" value="0"/>&nbsp;км.</td>
    </tr>
 
    <tr>
