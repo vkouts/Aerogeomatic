@@ -1,0 +1,129 @@
+{% extends "layout.html" %}
+{% block additional_scripts %}
+ <link rel="stylesheet" href="{{ url_for('static', filename='js/jqwidgets/styles/jqx.base.css') }}" type="text/css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='js/jqwidgets/styles/jqx.arctic.css') }}" type="text/css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='js/jqwidgets/styles/jqx.fresh.css') }}" type="text/css" />
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-1.10.2.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxcore.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxpasswordinput.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxinput.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxdatetimeinput.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxcalendar.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxtooltip.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/globalization/globalize.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxbuttons.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxscrollbar.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxlistbox.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxdropdownlist.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxexpander.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxvalidator.js') }}"></script>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxdata.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxdata.export.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxdatatable.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/jqxtreegrid.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/scripts/demos.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jqwidgets/globalization/globalize.js') }}"></script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+         var roadscode = [
+         {% for road in RoadsList -%}
+         "{{ road }}",
+         {% endfor %}];
+         $("#Road").jqxExpander({ toggleMode: 'none', width: '350px', showArrow: false });
+         $("#rcode").jqxDropDownList({  source: roadscode, selectedIndex: 1, width: '200px', height: '20px', promptText: "..", dropDownHeight: "180px" });
+         $("#begin_km").jqxInput({ width: '200px', height: '20px' });
+         $("#end_km").jqxInput({ width: '200px', height: '20px' });
+         $("#dateAdd").jqxDateTimeInput({  width: '200px', height: '20px' });
+         $("#submit").jqxButton({ theme: theme });
+         $("#form").jqxValidator({
+            rules: [
+               { input: "#rcode", message: "Введите код дороги", action: 'keyup,blur', rule:'required', rule: function(input, commit){
+                      var index = $("#rcode").jqxDropDownList('getSelectedIndex');
+                      return index != -1;
+                  } 
+               },
+               { input: "#begin_km", message: "Введите начало дороги", action: 'keyup,blur', rule:'required', placeHolder: "0" },
+               { input: "#end_km", message: "Введите конец дороги", action: 'keyup,blur', rule:'required' },
+               
+            ], hintType: "label"
+         });
+
+         var Rcode_ = $("#rcode").val();
+         var Begin_km_ = $("#begin_km").val();
+         var End_km_ = $("#end_km").val();
+         var Date_ = $("#dateAdd").val();
+
+
+         $('#submit').click(function(){
+            Rcode_ = $("#rcode").val();
+            Begin_km_ = $("#begin_km").val();
+            End_km_ = $("#end_km").val();
+            Date_ = $("#dateAdd").val();
+            $("#form").jqxValidator('validate');
+         });
+
+         $('#form').on('validationSuccess', function (event) {
+                $("#Road").jqxExpander('setContent', 'Обработка...');
+                $.ajax({
+                    type: "POST",
+                    url: "./result",
+                    data: JSON.stringify({ Rcode: Rcode_, Begin_km: Begin_km_, End_km: End_km_, Date: Date_ }, null, '\t'),
+                    contentType: "application/json;charset=UTF-8",
+                    complete: function(result) {
+                        console.log(result);
+                    }
+                });
+         });
+      });
+    </script>
+
+{% endblock %}
+
+{% block body %}
+<div id="Road" style="font-family: Verdana; font-size: 13px;">
+  <div>
+    Трасса:
+  </div>
+  <div>
+   <form id='form' action="result.html">
+   <table>
+
+   <tr>
+   <td>Код трассы:</td>
+   <td>
+   <div id="rcode" />
+   
+
+   <!-- <select>
+   {% for road in RoadsList %}
+    <option>{{ road }}</option>
+   {% endfor %}
+   </select> -->
+
+   </td>
+   </tr>
+
+   <tr>
+   <td>Начало:</td><td><input id="begin_km" value="0"/></td>
+   </tr>
+
+   <tr>
+   <td>Конец:</td><td><input id="end_km" value="0"/></td>
+   </tr>
+
+   <tr>
+   <td>Дата:</td><td><div id="dateAdd" /></td>
+   </tr>
+
+   <tr>
+   <td><input type="button" id="submit" value="Ok" /></td>
+   </tr>
+
+   </table>
+   </form>
+   </div>
+</div>
+<hr>
+<div id="result" />
+{% endblock %}

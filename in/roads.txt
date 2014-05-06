@@ -1,0 +1,32 @@
+TABLE dorgis.dict_roads
+(
+  id integer NOT NULL DEFAULT nextval('dorgis.t001_id_seq'::regclass),
+  road_code smallint,
+  k_s001_1 smallint,
+  "number" character varying(10),
+  new_road_code character varying(20),
+  name character varying(150),
+  length numeric(7,3),
+  class smallint,
+  inventory_date timestamp without time zone,
+  remark character varying(40),
+  create_user_name character varying(32),
+  create_date_time timestamp without time zone,
+  update_user_name character varying(32),
+  update_date_time timestamp without time zone,
+  history_info character varying(4096),
+  econ_adm_value character varying(4096),
+  road_links character varying(4096),
+  traffic_description character varying(4096),
+  topo_conditions character varying(4096),
+  CONSTRAINT t001_pkey PRIMARY KEY (id)
+)
+1629;3007;8;"";"03 ОП РЗ 03К-011";"г.Тимашевск - г.Приморско-Ахтарск";83.316;2;"2003-10-01 00:00:00";"";"postgres";"2013-11-29 11:14:10.571962";"";"";"";"";"";"";""
+1630;3008;8;"23 РМ-14";"03 ОП РЗ 03К-016";"г.Славянск-на-Кубани - г.Крымск";32.257;2;"2007-06-05 00:00:00";"";"postgres";"2013-11-29 11:14:10.571962";"";"";"";"";"";"";""
+1631;3009;8;"";"03 ОП РЗ 03К-027";"ст-ца Челбасская - ст-ца Крыловская - ст-ца Ленинградская";36.748;3;"1999-04-29 00:00:00";"";"postgres";"2013-11-29 11:14:10.571962";"";"";"";"";"";"";""
+1632;3010;8;"";"03 ОП РЗ 03А-004";"п.Энем - г.Адыгейск - а.Бжедугхабль";10.412;4;"2000-07-01 00:00:00";"";"postgres";"2013-11-29 11:14:10.571962";"";"";"";"";"";"";""
+1633;3011;8;"";"03 ОП РЗ 03К-008";"ст-ца Журавская - г.Тихорецк";70.718;2;"1999-11-18 00:00:00";"";"postgres";"2013-11-29 11:14:10.571962";"";"";"";"";"";"";""
+2359;6002;8;"2301 РП-04";"03 ОП РЗ 03А-103";"Подъезд к г.Анапа";8.830;4;"2007-12-20 00:00:00";"неточно";"postgres";"2013-11-29 11:14:10.571962";"";"";"";"";"";"";""
+
+
+
