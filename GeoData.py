@@ -93,6 +93,10 @@ class Road:
                   self.conn.commit()
 
 
+   def length(self, RCode):
+       self.cur.execute("SELECT length FROM Roads WHERE road_code=?",[RCode])
+       return self.cur.fetchone()[0]
+
    def __del__(self):
        self.cur.close()
        self.conn.close()
@@ -182,6 +186,7 @@ if __name__ == '__main__':
    Road1 = Road()
    #Road1.Show()
    print Road1.List()
+   print Road1.length('6002')
    #AZS1 = AZS()
    #AZS1.Show()
    #EXIT1 = EXIT()

@@ -31,7 +31,7 @@
          "{{ road }}",
          {% endfor %}];
          $("#Road").jqxExpander({ toggleMode: 'none', width: '350px', showArrow: false });
-         $("#rcode").jqxDropDownList({  source: roadscode, selectedIndex: 1, width: '200px', height: '20px', promptText: "..", dropDownHeight: "180px" });
+         $("#rcode").jqxDropDownList({  source: roadscode, selectedIndex: -1, width: '200px', height: '20px', promptText: "..", dropDownHeight: "180px" });
          $("#begin_km").jqxInput({ width: '200px', height: '20px' });
          $("#end_km").jqxInput({ width: '200px', height: '20px' });
          $("#dateAdd").jqxDateTimeInput({  width: '200px', height: '20px' });
@@ -54,6 +54,15 @@
          var End_km_ = $("#end_km").val();
          var Date_ = $("#dateAdd").val();
 
+         $("#rcode").on('select',function(event){
+           Rcode_ = $("#rcode").val();
+           $.getJSON("./roadlength",{ Rcode: Rcode_ },
+             function(result){
+               $("#end_km").attr('value',result.RoadLength)
+              console.log(result);
+             });
+         });
+
 
          $('#submit').click(function(){
             Rcode_ = $("#rcode").val();
@@ -65,15 +74,13 @@
 
          $('#form').on('validationSuccess', function (event) {
                 $("#Road").jqxExpander('setContent', 'Обработка...');
-                $.ajax({
-                    type: "POST",
-                    url: "./result",
-                    data: JSON.stringify({ Rcode: Rcode_, Begin_km: Begin_km_, End_km: End_km_, Date: Date_ }, null, '\t'),
-                    contentType: "application/json;charset=UTF-8",
-                    complete: function(result) {
-                        console.log(result);
-                    }
-                });
+                $.getJSON("./result", { Rcode: Rcode_, Begin_km: Begin_km_, End_km: End_km_, Date: Date_ },
+                  function(result){
+                     console.log(result);
+                     console.log(JSON.stringify(result));
+                     console.log(result.result.Rcode);
+                  }
+                );
          });
       });
     </script>
