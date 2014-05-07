@@ -5,6 +5,7 @@ import sqlite3
 import xlrd
 import re
 import math
+import time
 
 def km_to_kmm(km_):
     km_ = float(km_)
@@ -225,6 +226,11 @@ class Road:
 
     def RoadAZS(self, Rcode, Begin_km, End_km, Date):
         AZS = []
+        if Date.strip() != '':
+            Date_ = time.strptime(Date, "%d/%m/%Y")
+        else:
+            Date_ = ''
+
         self.cur.execute("""
             SELECT 
               code,begin_azs,end_azs,situat,data_add,data_delete 
@@ -233,12 +239,27 @@ class Road:
         """,[Rcode, Begin_km, End_km, Begin_km, End_km])
         row = self.cur.fetchone()
         while row is not None:
-            AZS.append(dict(code=row[0],begin_azs=row[1], end_azs=row[2], situat=row[3], data_add=row[4], data_delete=row[5]))
+            if row[4].strip() != '':
+                data_add_ = time.strptime(row[4], "%d.%m.%Y %H:%M:%S")
+            else:
+                data_add_ = time.strptime("01.01.0001 00:00:00", "%d.%m.%Y %H:%M:%S")
+
+            if row[5].strip() != '':
+                data_delete_ = time.strptime(row[5], "%d.%m.%Y %H:%M:%S")
+            else:
+                data_delete_ = time.strptime("31.12.9999 23:59:59", "%d.%m.%Y %H:%M:%S")
+            if Date_ != '' and (Date_>data_add_ and Date_<data_delete_): 
+                AZS.append(dict(code=row[0],begin_azs=row[1], end_azs=row[2], situat=row[3], data_add=row[4], data_delete=row[5]))
             row = self.cur.fetchone()
         return AZS
 
     def RoadExits(self, AZSs, Begin_km, End_km, Date):
         EXITS = []
+        if Date.strip() != '':
+           Date_ = time.strptime(Date, "%d/%m/%Y")
+        else:
+           Date_ = ''
+
         for AZS in AZSs:
            self.cur.execute("""
               SELECT 
@@ -246,15 +267,21 @@ class Road:
               FROM EXITS
               WHERE code=? AND (position BETWEEN ? AND ?);
            """,[AZS['code'],AZS['begin_azs'],AZS['end_azs']])
-           #print AZS['code']
            row = self.cur.fetchone()
            while row is not None:
-              #print row[3].encode('utf-8').decode('utf-8') + ' &&&&&&&&&&&&&&&&&&&'
-              print row[3] + '   &&&&&&&&&&&&&&&&&'
-              #if 'АЗС' in row[3].decode('utf-8').encode('utf-8'):
-              if u'АЗС' in row[3]:
-                  EXITS.append(dict(code=row[0],position=km_to_kmm(row[1]),transverse=row[2],name=row[3],material=row[4],tech_condition=row[5],date_add=row[6],date_del=row[7]))
-              row = self.cur.fetchone()
+               if row[6].strip() != '':
+                   data_add_ = time.strptime(row[6], "%d.%m.%Y %H:%M:%S")
+               else:
+                   data_add_ = time.strptime("01.01.0001 00:00:00", "%d.%m.%Y %H:%M:%S")
+
+               if row[7].strip() != '':
+                   data_delete_ = time.strptime(row[7], "%d.%m.%Y %H:%M:%S")
+               else:
+                   data_delete_ = time.strptime("31.12.9999 23:59:59", "%d.%m.%Y %H:%M:%S")
+
+               if u'АЗС' in row[3] and (Date_ != '' and (Date_>data_add_ and Date_<data_delete_)):
+                   EXITS.append(dict(code=row[0],position=km_to_kmm(row[1]),transverse=row[2],name=row[3],material=row[4],tech_condition=row[5],date_add=row[6],date_del=row[7]))
+               row = self.cur.fetchone()
         return EXITS
         
 
@@ -267,7 +294,7 @@ if __name__ == '__main__':
    #Road1.Show()
    print Road1.RoadList()
    print Road1.RoadLength('6002')
-   AZS1 = Road1.RoadAZS('3010',0,5,'')
+   AZS1 = Road1.RoadAZS('6002',0,5,'')
    print Road1.RoadExits(AZS1,0,5,'')
    #AZS1 = AZS()
    #AZS1.Show()

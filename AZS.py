@@ -3,18 +3,8 @@
 import math
 from flask import Flask, render_template, request, json, jsonify
 from jinja2 import Template
-
 import GeoData
 
-def km_to_kmm(km_):
-    km_ = float(km_)
-    km = int(km_)
-    m = str(int((km_ - math.trunc(km_))*1000))
-    if len(m) == 1:
-       m = '00' + m
-    if len(m) == 2:
-       m = '0' + m
-    return "%s+%s"%(str(km),m)
 
 app = Flask(__name__)
 app.debug = True
@@ -38,22 +28,22 @@ def result():
      CurrentEXITS = CurrentRoad.RoadExits(CurrentAZS, Begin_km, End_km, Dat)
 
      table_ = Template("""
-     <table>
+     <table class='result'>
      <tr>
-        <td>Наименование</td>
-        <td>Км+м</td>
-        <td>Положение</td>
-        <td>Покрытие</td>
-        <td>Техническое состояние</td>
+        <th class='result'>Наименование</td>
+        <th class='result'>Км+м</td>
+        <th class='result'>Положение</td>
+        <th class='result'>Покрытие</td>
+        <th class='result'>Техническое состояние</td>
      </tr>
 
      {% for EXIT in EXITS %}
      <tr>
-        <td>{{ EXIT.name }}</td>
-        <td>{{ EXIT.position }}</td>
-        <td>{{ EXIT.transverse }}</td>
-        <td>{{ EXIT.material }}</td>
-        <td>{{ EXIT.tech_condition }}</td>
+        <td class='result'>{{ EXIT.name }}</td>
+        <td class='result'>{{ EXIT.position }}</td>
+        <td class='result'>{{ EXIT.transverse }}</td>
+        <td class='result'>{{ EXIT.material }}</td>
+        <td class='result'>{{ EXIT.tech_condition }}</td>
      </tr>
      {% endfor %}
      </table>
@@ -68,7 +58,7 @@ def result():
      #print Dat
      #print Rcode
      #print km_to_kmm(Begin_km)
-     return jsonify(result={'Table': table, 'Dat': Dat, 'Rcode': Rcode, 'Name': CurrentRoad.name(Rcode), 'Begin_km': km_to_kmm(Begin_km), 'End_km': km_to_kmm(End_km) })
+     return jsonify(result={'Table': table, 'Dat': Dat, 'Rcode': Rcode, 'Name': CurrentRoad.name(Rcode), 'Begin_km': GeoData.km_to_kmm(Begin_km), 'End_km': GeoData.km_to_kmm(End_km) })
      #return jsonify(result={'Dat': Dat, 'Rcode': Rcode, 'Name': CurrentRoad.name(Rcode) })
 
 @app.route('/roadlength')

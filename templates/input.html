@@ -1,6 +1,19 @@
 {% extends "layout.html" %}
 {% block additional_scripts %}
- <link rel="stylesheet" href="{{ url_for('static', filename='js/jqwidgets/styles/jqx.base.css') }}" type="text/css" />
+    <style>
+    table.result { 
+       border-width:1px;
+       border-style:dotted;
+       border-color:#808080;
+       border-collapse:collapse;
+       border-spacing:3px;
+       width: 850px;
+       padding:3;
+    }
+    td.result  { border: 1px solid black;}
+    th.result  { border: 1px solid black;}
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='js/jqwidgets/styles/jqx.base.css') }}" type="text/css" />
     <link rel="stylesheet" href="{{ url_for('static', filename='js/jqwidgets/styles/jqx.arctic.css') }}" type="text/css" />
     <link rel="stylesheet" href="{{ url_for('static', filename='js/jqwidgets/styles/jqx.fresh.css') }}" type="text/css" />
     <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-1.10.2.min.js') }}"></script>
@@ -58,7 +71,8 @@
            Rcode_ = $("#rcode").val();
            $.getJSON("./roadlength",{ Rcode: Rcode_ },
              function(result){
-               $("#end_km").attr('value',result.RoadLength)
+               $("#begin_km").attr('value','0');
+               $("#end_km").attr('value',result.RoadLength);
               console.log(result);
              });
          });
