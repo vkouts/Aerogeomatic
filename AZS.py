@@ -23,7 +23,7 @@ CurrentRoad = GeoData.Road()
 
 @app.route('/')
 def input_data():
-    RoadsList = CurrentRoad.List()
+    RoadsList = CurrentRoad.RoadList()
     return render_template('input.html',RoadsList=RoadsList)
 
 @app.route('/result', methods = ['GET', 'POST'])
@@ -32,6 +32,10 @@ def result():
      Rcode = request.args.get('Rcode')
      Begin_km = request.args.get('Begin_km')
      End_km = request.args.get('End_km')
+
+
+     CurrentAZS = CurrentRoad.RoadAZS(Rcode, Begin_km, End_km, Dat)
+     CurrentEXITS = CurrentRoad.RoadExits(CurrentAZS, Begin_km, End_km, Dat)
 
      table_ = Template("""
      <table>
@@ -43,9 +47,18 @@ def result():
         <td>Техническое состояние</td>
      </tr>
 
+     {% for EXIT in EXITS %}
+     <tr>
+        <td>{{ EXIT.name }}</td>
+        <td>{{ EXIT.position }}</td>
+        <td>{{ EXIT.transverse }}</td>
+        <td>{{ EXIT.material }}</td>
+        <td>{{ EXIT.tech_condition }}</td>
+     </tr>
+     {% endfor %}
      </table>
      """.decode('utf-8'))
-     table = table_.render()
+     table = table_.render(EXITS=CurrentEXITS)
 
 
      #print request.json
@@ -61,7 +74,7 @@ def result():
 @app.route('/roadlength')
 def roadlength():
      Rcode = request.args.get('Rcode')
-     RoadLength = CurrentRoad.length(Rcode)
+     RoadLength = CurrentRoad.RoadLength(Rcode)
      return jsonify({'RoadLength': RoadLength})
 
 if __name__ == '__main__':
