@@ -6,8 +6,12 @@ import xlrd
 import re
 import math
 import time
+import os.path
 
 def km_to_kmm(km_):
+    """
+      Небольшая подпрограмма для перевода километров в км+метры
+    """    
     km_ = float(km_)
     km = int(km_)
     m = str(int((km_ - math.trunc(km_))*1000))
@@ -20,7 +24,36 @@ def km_to_kmm(km_):
 
 class Road:
     Roads = []
-    FirstRun = False
+    """Основной объект для работы с геоданными.
+
+      При старте, если не установлен флаг (не существует файла FirstRun.flag), вычитывает исходные данные 
+      из файлов в директории ./in/
+      Основные свойства:
+        FirstRunFile - флаг первого запуска. Если данный файл удалить, 
+           исходные данные вычитываются заново
+        DB - файл БД
+        ROADSFILE - текстовый файл с дампом базы дорог
+        AZSFILE - исходный Excel-файл с данными по АЗС
+        EXITSFILE - исходный Excel-файл с данными по съездам
+      Основные методы:
+        RoadList() - выводит имеющийся список кодов дорог
+        RoadAZS(Rcode, Begin_km, End_km, Date) - выводит список АЗС на заданном участке
+           Rcode - код дороги
+           Begin_km - начальный участок
+           End_km - конечный участок
+           Date - актуальная дата
+        RoadExits(AZSs, Begin_km, End_km, Date) - выводит список съездов АЗС на заданном участке
+           AZSs - массив с заправками, полученный методом RoadAZS
+           Begin_km - начальный участок
+           End_km - конечный участок
+           Date - актуальная дата
+        RoadLength(Rcode) - возвращает длину дороги
+           Rcode - код дороги
+        RoadName(Rcode) - возвращает наименование дороги
+        Show() - вспомагательный метод для целей тестирования
+
+    """
+    FirstRunFile = './FirstRun.flag'
     DB = './aerogeomatika.db'
     ROADSFILE = './in/roads.txt'
     AZSFILE = './in/АЗС.xls'
@@ -29,7 +62,7 @@ class Road:
     def __init__(self):
        self.conn = sqlite3.connect(self.DB,check_same_thread = False)
        self.cur = self.conn.cursor()
-       if self.FirstRun:
+       if not os.path.isfile(self.FirstRunFile):
          self.cur.execute("""
             CREATE TABLE IF NOT EXISTS Roads(
                 ID INTEGER PRIMARY KEY,
@@ -187,13 +220,14 @@ class Road:
                   date_del) VALUES (?,?,?,?,?,?,?,?)""",[code, position, transverse, name, material, tech_condition, date_add, date_del])
              self.conn.commit()
              cur_row +=1
+         open(self.FirstRunFile, 'a').close()
 
 
     def RoadLength(self, RCode):
         self.cur.execute("SELECT length FROM Roads WHERE road_code=?",[RCode])
         return self.cur.fetchone()[0]
 
-    def name(self, RCode):
+    def RoadName(self, RCode):
         self.cur.execute("SELECT name FROM Roads WHERE road_code=?",[RCode])
         return self.cur.fetchone()[0]
 
@@ -290,16 +324,12 @@ class Road:
 
 
 if __name__ == '__main__':
+   # Тестируем
    Road1 = Road()
-   #Road1.Show()
    print Road1.RoadList()
    print Road1.RoadLength('6002')
-   AZS1 = Road1.RoadAZS('6002',0,5,'')
-   print Road1.RoadExits(AZS1,0,5,'')
-   #AZS1 = AZS()
-   #AZS1.Show()
-   #EXIT1 = EXIT()
-   #EXIT1.Show()
+   AZS1 = Road1.RoadAZS('6002',0,5,'08/05/2014')
+   print Road1.RoadExits(AZS1,0,5,'08/05/2014')
 
 
 

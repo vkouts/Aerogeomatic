@@ -13,11 +13,13 @@ CurrentRoad = GeoData.Road()
 
 @app.route('/')
 def input_data():
+    """Основная процедура """
     RoadsList = CurrentRoad.RoadList()
     return render_template('input.html',RoadsList=RoadsList)
 
 @app.route('/result', methods = ['GET', 'POST'])
 def result():
+     """ Обрабатываем данные и выводим результат """
      Dat = request.args.get('Date')
      Rcode = request.args.get('Rcode')
      Begin_km = request.args.get('Begin_km')
@@ -49,20 +51,11 @@ def result():
      </table>
      """.decode('utf-8'))
      table = table_.render(EXITS=CurrentEXITS)
-
-
-     #print request.json
-     #print request.json['Date']
-     #print "gggggg " + str(jsonify(result=request.json['Date']))
-     #return jsonify(result=request.json['Date'])
-     #print Dat
-     #print Rcode
-     #print km_to_kmm(Begin_km)
-     return jsonify(result={'Table': table, 'Dat': Dat, 'Rcode': Rcode, 'Name': CurrentRoad.name(Rcode), 'Begin_km': GeoData.km_to_kmm(Begin_km), 'End_km': GeoData.km_to_kmm(End_km) })
-     #return jsonify(result={'Dat': Dat, 'Rcode': Rcode, 'Name': CurrentRoad.name(Rcode) })
+     return jsonify(result={'Table': table, 'Dat': Dat, 'Rcode': Rcode, 'Name': CurrentRoad.RoadName(Rcode), 'Begin_km': GeoData.km_to_kmm(Begin_km), 'End_km': GeoData.km_to_kmm(End_km) })
 
 @app.route('/roadlength')
 def roadlength():
+     """ Отдаем JSON-результат с длиной дороги по запросу """
      Rcode = request.args.get('Rcode')
      RoadLength = CurrentRoad.RoadLength(Rcode)
      return jsonify({'RoadLength': RoadLength})
